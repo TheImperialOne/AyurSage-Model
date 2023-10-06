@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Medicine Predictor</title>
+</head>
+<body>
+    <h1>AI Medicine Predictor</h1>
+    <textarea id="description" placeholder="Enter a description"></textarea>
+    <button id="predictButton">Predict</button>
+    <div id="result">
+        <h2>Predicted Symptom:</h2>
+        <p id="predictedSymptom"></p>
+        <h2>Predicted Medicines:</h2>
+        <ul id="predictedMedicines"></ul>
+    </div>
+    <script>
+       document.getElementById('predictButton').addEventListener('click', async () => {
+    const description = document.getElementById('description').value;
+    
+    // Send a POST request to the Flask API with the user's description
+    const response = await fetch('https://cautious-zebra-vw5rq4w6vq9cxrq-5000.app.github.dev/predict', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description: description }) // Use the correct variable name
+    });
+    
+    if (response.ok) {
+        const data = await response.json();
+        document.getElementById('predictedSymptom').textContent = data.predicted_symptom;
+        const medicinesList = document.getElementById('predictedMedicines');
+        medicinesList.innerHTML = '';  // Clear previous results
+        data.predicted_medicines.forEach(medicine => {
+            const listItem = document.createElement('li');
+            listItem.textContent = medicine;
+            medicinesList.appendChild(listItem);
+        });
+    } else {
+        alert('Error predicting. Please try again.');
+    }
+});
+
+    </script>
+</body>
+</html>
